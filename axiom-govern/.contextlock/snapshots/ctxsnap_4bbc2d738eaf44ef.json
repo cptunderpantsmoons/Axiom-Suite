@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "artifact_type": "snapshot",
+  "project_id": "ctxproj_management-harness",
+  "hash_spec_version": 1,
+  "scanner_version": 1,
+  "config_hash": "fc39259d95c50b50f221ab40f6877c775e2040dfd31661dbce9e38bf9e05f428",
+  "generation_mode": "full",
+  "incremental_base_snapshot_hash": null,
+  "fallback_to_full": false,
+  "fallback_reason": null,
+  "created_at": "2026-08-15T07:15:24.629Z",
+  "git": {
+    "branch": "main",
+    "commit": null,
+    "dirty": true,
+    "recent_commits": []
+  },
+  "machine_facts": {
+    "languages": [],
+    "file_count": 2,
+    "manifests": [],
+    "entrypoints": [],
+    "test_commands": [],
+    "build_commands": [],
+    "run_commands": [],
+    "dependencies": [],
+    "docs_files": [
+      "implementation_plan.md"
+    ]
+  },
+  "project_map": {
+    "directories": [],
+    "important_files": [
+      {
+        "path": "implementation_plan.md",
+        "reason": "documentation"
+      }
+    ]
+  },
+  "debt_markers": [],
+  "inferred_context": {
+    "summary": "Management Harness has 2 tracked files across 0 detected languages.",
+    "architecture": [],
+    "risk_zones": []
+  },
+  "human_annotations": {
+    "architecture_claims": [],
+    "known_debt": []
+  },
+  "volatile_state": {
+    "incremental": {
+      "reused_fingerprints": 0,
+      "recomputed_fingerprints": 2
+    }
+  },
+  "security": {
+    "redaction_count": 0,
+    "sensitive_paths_skipped": 0
+  },
+  "content_fingerprints": {
+    "(same as \"user\" config, ignored)": "06b5a9babdb5c4c76eba81d6ce98c2c21348a2e37dc0537117d487bdb1aa8e27",
+    "implementation_plan.md": "0198529b8cff62a844c45ec7eeaef60d4aec6a990e7ed3eb3dbf78cea8a02834"
+  },
+  "snapshot_hash": "ctxsnap_4bbc2d738eaf44ef",
+  "artifact_hash": "4bbc2d738eaf44ef76a03a0ec1126ec0fe9f1376b6b23af3fd595ebd2359a6f2"
+}

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "project_name": "peproxy",
+  "project_id": "ctxproj_peproxy",
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    ".git/**",
+    ".contextlock/**",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    ".next/**",
+    "vendor/**",
+    "target/**"
+  ],
+  "automation": {
+    "install_hooks": true,
+    "auto_snapshot": true,
+    "auto_prompt_refresh": true,
+    "auto_audit": true,
+    "auto_sync": false
+  },
+  "remote": {
+    "provider": "huggingface",
+    "repo": null,
+    "token_env": "HF_TOKEN"
+  }
+}

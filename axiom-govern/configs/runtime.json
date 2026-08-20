@@ -1,0 +1,34 @@
+{
+  "providers": {
+    "openai": {
+      "type": "openai",
+      "base_url": "https://api.openai.com/v1",
+      "enabled": false,
+      "api_key": ""
+    },
+    "anthropic": {
+      "type": "anthropic",
+      "base_url": "https://api.anthropic.com/v1",
+      "enabled": false,
+      "api_key": ""
+    },
+    "nvidia": {
+      "type": "openai",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "enabled": true,
+      "api_key": ""
+    },
+    "local": {
+      "type": "local",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "enabled": false,
+      "api_key": ""
+    },
+    "kilo": {
+      "type": "openai",
+      "base_url": "https://api.kilo.ai/api/gateway",
+      "enabled": true,
+      "api_key": ""
+    }
+  }
+}

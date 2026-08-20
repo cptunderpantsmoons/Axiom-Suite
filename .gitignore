@@ -1,0 +1,26 @@
+# Build artifacts / caches
+node_modules/
+target/
+dist/
+dist-build/
+coverage/
+*.test
+coverage.out
+data/
+
+# Env & secrets
+.env
+*.env.local
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+*.log
+isolate-*
+*.prof
+
+# ContextLock runtime state (generated; projects keep their committed .contextlock config)
+.contextlock/cache/
+.contextlock/index/
+.contextlock/snapshots/ctxsnap_*

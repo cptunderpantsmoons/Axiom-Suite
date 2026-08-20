@@ -1,0 +1,192 @@
+name: Guardrails Core
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  pr-metadata-and-spec-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR template metadata and spec links
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = (context.payload.pull_request.body || '').toLowerCase();
+
+            const missing = [];
+            const required = [
+              'ai_assisted:',
+              'change_class:',
+              'affected_specs:',
+              'risk_level:'
+            ];
+            for (const token of required) {
+              if (!body.includes(token)) missing.push(token);
+            }
+
+            const hasBehaviorEvidence = body.includes('artifact diff evidence') || body.includes('before:') || body.includes('after:');
+            const hasSpecLink = body.includes('docs/specs/');
+
+            if (!hasSpecLink) {
+              missing.push('at least one docs/specs/ link in PR body');
+            }
+
+            if (!hasBehaviorEvidence) {
+              missing.push('artifact diff evidence section (before/after)');
+            }
+
+            if (missing.length) {
+              core.setFailed(`PR guardrail metadata check failed. Missing: ${missing.join(', ')}`);
+            } else {
+              core.info('PR metadata/spec-link guardrail check passed.');
+            }
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  source-test-coupling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check source/test coupling
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          changed=$(git diff --name-only "$BASE" "$HEAD")
+          echo "Changed files:"
+          echo "$changed"
+
+          src_changed=$(echo "$changed" | grep -E '^(src|app)/|\.(ts|tsx|js|jsx|py)$' || true)
+          test_changed=$(echo "$changed" | grep -E '^(test|tests)/|\.(test|spec)\.(ts|tsx|js|jsx|py)$' || true)
+
+          if [[ -n "$src_changed" && -z "$test_changed" ]]; then
+            echo "Source files changed without test changes."
+            exit 1
+          fi
+
+  scope-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify support boundary declaration exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/specs/16-alpha-ecosystem-support-boundary.md
+          grep -q "Out of scope for alpha" docs/specs/16-alpha-ecosystem-support-boundary.md
+          grep -q "partial_support" docs/specs/16-alpha-ecosystem-support-boundary.md
+
+  determinism-replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Snapshot determinism replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          cp -R . "$tmp/repo"
+          cd "$tmp/repo"
+          git config user.name "ContextLock CI"
+          git config user.email "contextlock@example.invalid"
+          git add .
+          git commit -m "determinism fixture" >/dev/null || true
+          node src/cli/main.js init --yes --quiet || node src/cli/main.js init --yes
+          node src/cli/main.js snapshot --quiet
+          hash1="$(node -e "console.log(require('./.contextlock/lock.json').latest_snapshot_hash)")"
+          cp ".contextlock/snapshots/${hash1}.json" /tmp/contextlock-snapshot-1.json
+          cp ".contextlock/lock.json" /tmp/contextlock-lock-1.json
+          node src/cli/main.js snapshot --quiet
+          hash2="$(node -e "console.log(require('./.contextlock/lock.json').latest_snapshot_hash)")"
+          test "$hash1" = "$hash2"
+          diff -u /tmp/contextlock-snapshot-1.json ".contextlock/snapshots/${hash2}.json"
+          diff -u /tmp/contextlock-lock-1.json ".contextlock/lock.json"
+
+  spec-update-version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Intentional spec changes require spec edits and version bump note
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const changeClass = (body.match(/change_class:\s*([^\n]+)/i)?.[1] || '').toLowerCase();
+            if (!changeClass.includes('intentional_spec_change') && !changeClass.includes('spec improvement')) return;
+            const {owner, repo} = context.repo;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100
+            });
+            const touchedSpec = files.some((file) => file.filename.startsWith('docs/specs/'));
+            const hasVersionBumpNote = /version bump:\s*(yes|n\/a|not applicable)/i.test(body);
+            if (!touchedSpec || !hasVersionBumpNote) {
+              core.setFailed('Intentional spec changes require docs/specs edits and a "Version bump: yes|n/a" PR body line.');
+            }
+
+  dependency-rationale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Manifest changes require dependency rationale
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const {owner, repo} = context.repo;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100
+            });
+            const manifestChanged = files.some((file) => /(^|\/)(package.json|package-lock.json|pnpm-lock.yaml|yarn.lock|pyproject.toml|requirements.txt|Cargo.toml|Cargo.lock|go.mod|go.sum)$/.test(file.filename));
+            if (manifestChanged && !/dependency rationale:/i.test(body)) {
+              core.setFailed('Manifest or lockfile changed without a "Dependency rationale:" block in the PR body.');
+            }
+
+  audit-delta-high-severity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run ContextLock PR audit and require acknowledgement for high severity findings
+        shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          node src/cli/main.js init --yes >/dev/null
+          node src/cli/main.js audit --pr --base "${{ github.base_ref }}" --quiet || true
+          report=".contextlock/audits/pr-report.md"
+          if [[ -f "$report" ]] && grep -qi "(high)" "$report"; then
+            if ! grep -qi "acknowledge_high_severity_drift:" <<< "$PR_BODY"; then
+              echo "High-severity ContextLock drift requires acknowledge_high_severity_drift: in the PR body."
+              exit 1
+            fi
+          fi

@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Run tests
+        run: npm test
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run linter
+        run: npm run lint
+
+  determinism:
+    name: Snapshot Determinism
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify identical snapshots on repeated runs
+        run: |
+          tmp="$(mktemp -d)"
+          cp -R . "$tmp/repo"
+          cd "$tmp/repo"
+          git config user.name "CI"
+          git config user.email "ci@example.invalid"
+          git add .
+          git commit -m "determinism fixture" >/dev/null || true
+          node src/cli/main.js init --yes --quiet || node src/cli/main.js init --yes
+          node src/cli/main.js snapshot --quiet
+          hash1="$(node -e "console.log(require('./.contextlock/lock.json').latest_snapshot_hash)")"
+          cp ".contextlock/snapshots/${hash1}.json" /tmp/snapshot-1.json
+          cp ".contextlock/lock.json" /tmp/lock-1.json
+          node src/cli/main.js snapshot --quiet
+          hash2="$(node -e "console.log(require('./.contextlock/lock.json').latest_snapshot_hash)")"
+          test "$hash1" = "$hash2"
+          diff -u /tmp/snapshot-1.json ".contextlock/snapshots/${hash2}.json"
+          diff -u /tmp/lock-1.json ".contextlock/lock.json"
+
+  perf:
+    name: Performance Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run performance benchmarks
+        run: node --test tests/perf.test.js
+
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

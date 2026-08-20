@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "artifact_type": "prompt",
+  "prompt_id": "ctxprompt_2d738eaf44ef",
+  "prompt_type": "onboarding",
+  "template_version": 1,
+  "project_id": "ctxproj_management-harness",
+  "snapshot_hash": "ctxsnap_4bbc2d738eaf44ef",
+  "source_commit": null,
+  "created_at": "2026-08-15T07:15:24.746Z",
+  "valid_until_snapshot_change": true,
+  "depends_on": [
+    "implementation_plan.md"
+  ]
+}

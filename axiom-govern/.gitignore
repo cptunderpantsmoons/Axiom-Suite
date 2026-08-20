@@ -1,0 +1,28 @@
+# Binaries
+/bin/
+*.exe
+
+# Env
+.env
+
+# Local data
+*.log
+data/
+
+# Build artifacts
+dist-build/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Agent workspace / context state
+.kilo/
+
+# Go test cache output
+*.test
+coverage.out
+
+# Playwright MCP browser artifacts
+.playwright-mcp/

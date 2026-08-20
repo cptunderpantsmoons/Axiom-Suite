@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/prompt.schema.json",
+  "title": "ContextLock Prompt Metadata",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "prompt_id",
+    "prompt_type",
+    "template_version",
+    "project_id",
+    "snapshot_hash",
+    "source_commit",
+    "created_at",
+    "valid_until_snapshot_change",
+    "depends_on"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "artifact_type": { "type": "string", "const": "prompt" },
+    "prompt_id": { "type": "string" },
+    "prompt_type": { "type": "string", "const": "onboarding" },
+    "template_version": { "type": "integer", "const": 1 },
+    "project_id": { "type": "string" },
+    "snapshot_hash": { "type": "string" },
+    "source_commit": { "type": ["string", "null"] },
+    "created_at": { "type": "string" },
+    "valid_until_snapshot_change": { "type": "boolean", "const": true },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

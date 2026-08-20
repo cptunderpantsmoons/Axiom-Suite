@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "artifact_type": "snapshot_cache_index",
+  "latest_snapshot_hash": "ctxsnap_894302740e32b956",
+  "config_hash": "fc39259d95c50b50f221ab40f6877c775e2040dfd31661dbce9e38bf9e05f428",
+  "hash_spec_version": 1,
+  "scanner_version": 1,
+  "file_index": {
+    "implementation_plan.md": {
+      "size": 41290,
+      "mtime_ms": 1786777142755.8484,
+      "fingerprint": "0198529b8cff62a844c45ec7eeaef60d4aec6a990e7ed3eb3dbf78cea8a02834"
+    }
+  },
+  "updated_at": "2026-08-15T07:16:48.470Z"
+}

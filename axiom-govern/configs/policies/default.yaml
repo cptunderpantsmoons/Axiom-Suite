@@ -1,0 +1,27 @@
+version: "1.0.0"
+name: default-enterprise-policy
+description: Default enterprise guardrails for the Management Harness.
+active: true
+rules:
+  - id: block-jailbreak
+    priority: 100
+    condition: 'content contains "jailbreak"'
+    action: block
+    message: "Jailbreak attempts are not permitted."
+  - id: block-injection
+    priority: 90
+    condition: 'content contains "ignore previous instructions"'
+    action: block
+    message: "Prompt injection detected."
+  - id: block-high-max-tokens
+    priority: 50
+    condition: 'max_tokens > 8000'
+    action: block
+    message: "Token limit exceeds enterprise maximum."
+  - id: prefer-cheap-model
+    priority: 10
+    condition: 'model == "gpt-4"'
+    action: route
+    message: "Routed to cost-optimized provider."
+    params:
+      preferred_provider: "openai"

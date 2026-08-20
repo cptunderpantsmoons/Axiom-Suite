@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/site.schema.json",
+  "title": "ContextLock Site Metadata",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "site_hash",
+    "project_id",
+    "generated_at",
+    "pages"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "artifact_type": { "type": "string", "const": "site" },
+    "site_hash": { "type": "string" },
+    "project_id": { "type": ["string", "null"] },
+    "snapshot_hash": { "type": ["string", "null"] },
+    "audit_id": { "type": ["string", "null"] },
+    "generated_at": { "type": "string" },
+    "pages": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

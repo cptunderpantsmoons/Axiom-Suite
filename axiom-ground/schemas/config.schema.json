@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/config.schema.json",
+  "title": "ContextLock Config",
+  "type": "object",
+  "required": [
+    "version",
+    "project_name",
+    "project_id"
+  ],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "project_name": { "type": "string" },
+    "project_id": { "type": "string" },
+    "include": { "type": "array", "items": { "type": "string" } },
+    "exclude": { "type": "array", "items": { "type": "string" } },
+    "automation": { "type": "object" },
+    "remote": { "type": "object" },
+    "architecture_rules": { "type": "array" },
+    "suppressions": { "type": "array" },
+    "ci": { "type": "object" },
+    "audit": { "type": "object" },
+    "memory": { "type": "object" }
+  },
+  "additionalProperties": true
+}

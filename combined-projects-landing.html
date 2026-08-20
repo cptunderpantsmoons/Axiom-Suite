@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08070d">
+  <meta name="description" content="Axiom by AuditIntellect is the control plane for reliable AI-assisted development: ground the repo, compile intent, govern execution.">
+  <title>Axiom by AuditIntellect — Ground truth. Compile intent. Govern execution.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08070d;
+      --surface: #0e0d17;
+      --surface-2: #121020;
+      --fg: #e4e4e7;
+      --bright: #f4f4f5;
+      --muted: #8f8ba3;
+      --muted-2: #666176;
+      --border: #221f33;
+      --border-bright: #393250;
+      --accent: #8b5cf6;
+      --accent-2: #a78bfa;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+      --container: 1180px;
+      --gutter: clamp(20px, 4vw, 52px);
+      --radius: 16px;
+      --ease: cubic-bezier(.2, 0, 0, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      min-width: 320px;
+      color: var(--fg);
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 50, 180, .18), transparent 65%),
+        var(--bg);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { color: var(--bright); background: rgba(139, 92, 246, .45); }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .container { width: min(var(--container), calc(100% - (var(--gutter) * 2))); margin: 0 auto; }
+    .mono { font-family: var(--font-mono); }
+    .eyebrow {
+      color: var(--accent-2);
+      font: 600 11px/1.2 var(--font-mono);
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent-2); }
+    .cyan { color: var(--cyan); }
+
+    /* chrome */
+    .topline { height: 3px; background: linear-gradient(90deg, transparent, var(--accent), var(--cyan), transparent); background-size: 200% 100%; opacity: .9; animation: signal-sweep 5s ease-in-out infinite; }
+    .nav-wrap { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(34,31,51,.86); background: rgba(8,7,13,.78); backdrop-filter: blur(18px); }
+    .nav { height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 15px; font-weight: 800; letter-spacing: .13em; }
+    .brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--accent); color: var(--accent-2); font: 700 16px/1 var(--font-mono); box-shadow: 0 0 20px rgba(139,92,246,.2); }
+    .brand > span:nth-child(2) { color: var(--bright); }
+    .brand-byline { margin-left: 2px; color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: .03em; text-transform: none; white-space: nowrap; }
+    .nav-links { display: flex; align-items: center; gap: 27px; }
+    .nav-links a { color: var(--muted); font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; transition: color .18s var(--ease); }
+    .nav-links a:hover, .nav-links a.active { color: var(--bright); }
+    .nav-links a.active { color: var(--accent-2); }
+    .nav-cta, .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 42px; padding: 0 17px; border: 1px solid var(--accent); border-radius: 9px; color: #fff; background: var(--accent); font: 600 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 0 26px rgba(139,92,246,.22); transition: background .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease); }
+    .nav-links .nav-cta { color: #fff; }
+    .nav-cta:hover, .button-primary:hover { background: #7c4fe2; transform: translateY(-2px); box-shadow: 0 0 34px rgba(139,92,246,.38); }
+    .nav-cta:active, .button-primary:active, .button-secondary:active { transform: translateY(0) scale(.98); }
+    .checkout-trigger[aria-busy="true"] { pointer-events: none; opacity: .72; }
+    .menu-toggle { display: none; width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 8px; color: var(--fg); background: transparent; cursor: pointer; }
+    .menu-toggle svg { width: 18px; }
+
+    /* hero */
+    .hero { position: relative; min-height: 720px; display: grid; align-items: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+    .hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .34; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 80px 80px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
+    .hero::after { content: ""; position: absolute; left: 50%; top: 8%; width: min(720px, 90vw); aspect-ratio: 1; transform: translateX(-50%); border: 1px dashed rgba(139,92,246,.13); border-radius: 50%; box-shadow: 0 0 0 78px rgba(139,92,246,.025), 0 0 0 156px rgba(139,92,246,.02); pointer-events: none; animation: ambient-orbit 24s linear infinite; }
+    .hero-inner { position: relative; z-index: 1; padding: 105px 0 112px; text-align: center; }
+    .hero-kicker { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 27px; color: var(--cyan); }
+    .signal { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px var(--cyan); animation: signal-pulse 2.2s ease-in-out infinite; }
+    h1 { max-width: 850px; margin: 0 auto; color: var(--bright); font-size: clamp(46px, 7.4vw, 92px); font-weight: 800; letter-spacing: -.055em; line-height: .98; }
+    h1 em { color: var(--accent-2); font-style: normal; }
+    .hero-copy { max-width: 650px; margin: 28px auto 0; color: var(--muted); font-size: clamp(17px, 2vw, 20px); line-height: 1.65; }
+    .hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 35px; }
+    .button-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 17px; border: 1px solid var(--border-bright); border-radius: 9px; color: var(--fg); background: rgba(14,13,23,.7); font: 600 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; transition: border-color .18s var(--ease), background .18s var(--ease); }
+    .button-secondary:hover { border-color: var(--accent-2); background: var(--surface-2); }
+    .hero-foot { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 22px; margin-top: 55px; color: var(--muted-2); font: 10px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+    .hero-foot span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-foot span::before { content: ""; width: 4px; height: 4px; background: var(--border-bright); }
+    .motion-enter { opacity: 0; animation: enter-up .72s var(--ease) both; }
+    .motion-delay-1 { animation-delay: .08s; }
+    .motion-delay-2 { animation-delay: .16s; }
+    .motion-delay-3 { animation-delay: .24s; }
+    .motion-delay-4 { animation-delay: .32s; }
+    .motion-delay-5 { animation-delay: .4s; }
+
+    /* shared sections */
+    section { scroll-margin-top: 92px; }
+    .section { padding: 126px 0; border-bottom: 1px solid var(--border); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 52px; }
+    .section-head h2 { max-width: 660px; margin-top: 15px; color: var(--bright); font-size: clamp(32px, 4.4vw, 57px); font-weight: 800; letter-spacing: -.045em; line-height: 1.04; }
+    .section-head p { max-width: 300px; color: var(--muted); font-size: 15px; line-height: 1.65; }
+    .section-head .eyebrow { margin-bottom: 1px; }
+
+    /* pipeline */
+    .pipeline { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .pipeline::before { content: ""; position: absolute; top: 51px; left: 16.6%; right: 16.6%; border-top: 1px dashed var(--border-bright); opacity: .8; }
+    .stage-card { position: relative; z-index: 1; min-height: 315px; padding: 26px; border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(150deg, rgba(18,16,32,.95), rgba(14,13,23,.88)); opacity: 0; transform: translateY(18px); transition: opacity .65s var(--ease), border-color .22s var(--ease), transform .22s var(--ease); }
+    .pipeline.visible .stage-card { opacity: 1; transform: none; transition-duration: .65s, .22s, .65s; }
+    .pipeline.visible .stage-card:nth-child(2) { transition-delay: .08s, 0s, .08s; }
+    .pipeline.visible .stage-card:nth-child(3) { transition-delay: .16s, 0s, .16s; }
+    .stage-card:hover, .pipeline.visible .stage-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+    .stage-num { display: grid; place-items: center; width: 50px; height: 50px; margin-bottom: 31px; border: 1px solid var(--border-bright); border-radius: 50%; background: var(--bg); color: var(--accent-2); font: 600 14px var(--font-mono); }
+    .stage-card:nth-child(2) .stage-num { color: var(--cyan); border-color: rgba(34,211,238,.48); }
+    .stage-card:nth-child(3) .stage-num { color: var(--green); border-color: rgba(52,211,153,.48); }
+    .stage-card h3 { margin-bottom: 11px; color: var(--bright); font-size: 25px; letter-spacing: -.025em; }
+    .stage-card h3 span { color: var(--muted); font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+    .stage-card p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .stage-card ul { display: grid; gap: 9px; margin-top: 22px; list-style: none; color: var(--fg); font: 11px/1.5 var(--font-mono); }
+    .stage-card li::before { content: "↳"; margin-right: 9px; color: var(--accent-2); }
+    .stage-card:nth-child(2) li::before { color: var(--cyan); }
+    .stage-card:nth-child(3) li::before { color: var(--green); }
+
+    /* product cards */
+    .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .product-card { display: flex; flex-direction: column; min-height: 380px; padding: 26px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: border-color .22s var(--ease), transform .22s var(--ease), box-shadow .22s var(--ease); }
+    .product-card:hover { border-color: var(--border-bright); transform: translateY(-5px); box-shadow: 0 18px 45px rgba(0,0,0,.2); }
+    .products .reveal:nth-child(2) { transition-delay: .08s; }
+    .products .reveal:nth-child(3) { transition-delay: .16s; }
+    .product-card.featured { border-color: rgba(139,92,246,.65); background: linear-gradient(145deg, rgba(39,25,72,.48), var(--surface) 60%); }
+    .product-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .product-index { color: var(--muted-2); font: 11px var(--font-mono); }
+    .status { padding: 5px 8px; border: 1px solid rgba(52,211,153,.3); border-radius: 4px; color: var(--green); font: 10px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+    .product-card h3 { margin-top: 47px; color: var(--bright); font-size: 29px; letter-spacing: -.04em; }
+    .product-card h3 small { display: block; margin-top: 6px; color: var(--accent-2); font: 500 11px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+    .product-card p { margin-top: 17px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .product-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 25px; }
+    .tag { padding: 6px 8px; border: 1px solid var(--border); border-radius: 5px; color: var(--muted); font: 10px var(--font-mono); }
+    .product-link { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 31px; color: var(--fg); font: 600 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+    .product-link span { color: var(--accent-2); transition: transform .18s var(--ease); }
+    .product-link:hover span { transform: translateX(4px); }
+
+    /* proof / command */
+    .proof-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: center; }
+    .proof-copy h2 { margin-top: 15px; color: var(--bright); font-size: clamp(33px, 4.2vw, 56px); letter-spacing: -.045em; line-height: 1.04; }
+    .proof-copy > p:not(.eyebrow) { max-width: 460px; margin-top: 23px; color: var(--muted); font-size: 16px; line-height: 1.75; }
+    .proof-list { display: grid; gap: 13px; margin-top: 31px; list-style: none; }
+    .proof-list li { display: flex; gap: 11px; align-items: baseline; color: var(--fg); font-size: 13px; }
+    .proof-list li::before { content: "✓"; color: var(--green); font: 600 12px var(--font-mono); }
+    .terminal { overflow: hidden; border: 1px solid var(--border-bright); border-radius: var(--radius); background: #0b0a12; box-shadow: 0 22px 80px rgba(0,0,0,.28); }
+    .terminal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 17px; border-bottom: 1px solid var(--border); color: var(--muted); font: 10px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+    .terminal-dots { display: flex; gap: 6px; }
+    .terminal-dots i { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--border-bright); }
+    .terminal-dots i:first-child { background: var(--accent); }
+    pre { min-height: 300px; padding: 25px; overflow: auto; color: #bbb5cf; font: 12px/2 var(--font-mono); }
+    .cmd { color: var(--bright); }
+    .prompt { color: var(--accent-2); }
+    .key { color: var(--cyan); }
+    .value { color: var(--green); }
+    .terminal-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 17px; border-top: 1px solid var(--border); color: var(--muted-2); font: 10px var(--font-mono); }
+    .copy-button { border: 0; color: var(--accent-2); background: transparent; font: 600 10px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .copy-button:hover { color: var(--bright); }
+
+    /* metrics */
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+    .metric { min-height: 156px; padding: 24px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: rgba(14,13,23,.62); }
+    .metric-value { margin-top: 24px; color: var(--bright); font: 600 clamp(26px, 3.2vw, 43px)/1 var(--font-mono); letter-spacing: -.06em; }
+    .metric-value span { color: var(--accent-2); }
+    .metric-copy { margin-top: 9px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    /* pricing */
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+    .pricing-card { display: flex; flex-direction: column; min-height: 490px; padding: 25px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: border-color .22s var(--ease), transform .22s var(--ease), box-shadow .22s var(--ease); }
+    .pricing-card:hover { border-color: var(--border-bright); transform: translateY(-5px); box-shadow: 0 18px 45px rgba(0,0,0,.2); }
+    .pricing-card.featured { border-color: rgba(139,92,246,.7); background: linear-gradient(145deg, rgba(39,25,72,.55), var(--surface) 62%); }
+    .pricing-card.team { border-color: rgba(34,211,238,.48); background: linear-gradient(145deg, rgba(18,47,61,.35), var(--surface) 62%); }
+    .pricing-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 25px; }
+    .pricing-card h3 { margin-top: 34px; color: var(--bright); font-size: 25px; letter-spacing: -.035em; }
+    .pricing-card h3 small { display: block; margin-top: 7px; color: var(--muted); font: 500 10px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+    .price { display: flex; align-items: baseline; gap: 7px; margin-top: 25px; color: var(--bright); font: 600 34px/1 var(--font-mono); letter-spacing: -.06em; }
+    .price small { color: var(--muted); font: 10px var(--font-mono); letter-spacing: .02em; }
+    .price-note { min-height: 31px; margin-top: 9px; color: var(--muted-2); font: 10px/1.5 var(--font-mono); }
+    .pricing-card p:not(.eyebrow):not(.price-note) { margin-top: 19px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .pricing-features { display: grid; gap: 10px; margin: 25px 0 28px; padding-top: 22px; border-top: 1px solid var(--border); list-style: none; color: var(--fg); font: 11px/1.45 var(--font-mono); }
+    .pricing-features li::before { content: "✓"; margin-right: 8px; color: var(--green); }
+    .pricing-card .pricing-cta { width: 100%; margin-top: auto; }
+
+    /* CTA */
+    .cta-section { padding: 130px 0 150px; overflow: hidden; }
+    .cta-box { position: relative; padding: clamp(38px, 7vw, 83px); border: 1px solid var(--border-bright); border-radius: 20px; text-align: center; background: radial-gradient(circle at 50% 0%, rgba(139,92,246,.2), transparent 58%), var(--surface); }
+    .cta-box::before, .cta-box::after { content: ""; position: absolute; width: 40px; height: 40px; border-color: var(--accent); border-style: solid; }
+    .cta-box::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+    .cta-box::after { right: -1px; bottom: -1px; border-width: 0 1px 1px 0; }
+    .cta-box h2 { max-width: 700px; margin: 15px auto 0; color: var(--bright); font-size: clamp(36px, 5.6vw, 70px); letter-spacing: -.055em; line-height: 1; }
+    .cta-box p { max-width: 500px; margin: 22px auto 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .cta-box .hero-actions { margin-top: 31px; }
+    .cta-meta { margin-top: 29px; color: var(--muted-2); font: 10px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+
+    footer { padding: 27px 0 35px; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; color: var(--muted-2); font: 10px var(--font-mono); letter-spacing: .09em; text-transform: uppercase; }
+    .footer-brand { color: var(--fg); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a:hover { color: var(--accent-2); }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); will-change: opacity, transform; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .product-card.reveal.visible:hover, .pricing-card.reveal.visible:hover { transform: translateY(-5px); }
+
+    @keyframes enter-up {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes signal-sweep {
+      0%, 100% { background-position: 100% 0; }
+      50% { background-position: 0 0; }
+    }
+    @keyframes signal-pulse {
+      0%, 100% { opacity: .65; transform: scale(.85); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+    @keyframes ambient-orbit {
+      from { transform: translateX(-50%) rotate(0deg); }
+      to { transform: translateX(-50%) rotate(360deg); }
+    }
+    :focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+
+    @media (max-width: 820px) {
+      .nav { height: 64px; }
+      .nav-links { position: absolute; top: 64px; left: 0; right: 0; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 18px; border-bottom: 1px solid var(--border); background: rgba(8,7,13,.97); }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--border); }
+      .nav-links .nav-cta { margin-top: 14px; }
+      .menu-toggle { display: grid; place-items: center; }
+      .hero { min-height: auto; }
+      .hero-inner { padding: 87px 0 83px; }
+      .section { padding: 88px 0; }
+      .section-head, .proof-grid { display: block; }
+      .section-head p { margin-top: 22px; }
+      .pipeline, .products { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+      .pipeline::before { top: 50px; bottom: 50px; left: 25px; right: auto; border-top: 0; border-left: 1px dashed var(--border-bright); }
+      .stage-card { min-height: auto; padding: 23px 23px 26px 90px; }
+      .stage-num { position: absolute; top: 23px; left: 23px; margin: 0; }
+      .product-card { min-height: 320px; }
+      .proof-copy { margin-bottom: 46px; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-section { padding: 88px 0; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .brand { gap: 7px; }
+      .brand-byline { font-size: 9px; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .hero-foot { align-items: flex-start; flex-direction: column; gap: 11px; margin-top: 40px; }
+      .hero-actions { align-items: stretch; flex-direction: column; }
+      .hero-actions a { width: 100%; }
+      .metric { min-height: 135px; padding: 17px; }
+      .metric-value { margin-top: 17px; }
+      pre { padding: 18px; font-size: 10px; }
+      .terminal-foot { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .footer-links { flex-wrap: wrap; gap: 10px 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation: none !important; }
+      .reveal, .motion-enter, .stage-card { opacity: 1; transform: none; }
+      .product-card:hover, .pricing-card:hover, .stage-card:hover, .pipeline.visible .stage-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topline" aria-hidden="true"></div>
+  <header class="nav-wrap">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Axiom by AuditIntellect home"><span class="brand-mark">[</span><span>AXIOM</span><span class="brand-mark">]</span><span class="brand-byline">by AuditIntellect</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="#platform">Platform</a>
+        <a href="#projects">Projects</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#proof">How it works</a>
+        <a href="#contact" class="nav-cta">Request access <span>↗</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-inner container">
+        <div class="hero-kicker eyebrow motion-enter motion-delay-1"><span class="signal"></span> the AI development control plane</div>
+        <h1 id="hero-title" class="motion-enter motion-delay-2">Ground truth.<br><em>Compile intent.</em><br>Govern execution.</h1>
+        <p class="hero-copy motion-enter motion-delay-3">Axiom turns messy human requests into reliable, testable AI work — grounding every task in the real repo and governing what reaches your models.</p>
+        <div class="hero-actions motion-enter motion-delay-4">
+          <a class="button-primary checkout-trigger" href="/create-checkout-session" data-checkout data-plan="team">Subscribe to Axiom <span>→</span></a>
+          <a class="button-secondary" href="#platform">Explore the platform</a>
+        </div>
+        <div class="hero-foot motion-enter motion-delay-5"><span>one integrated stack</span><span>local-first by design</span><span>contracts, not conversation</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="platform" aria-labelledby="platform-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">01 / The system</p><h2 id="platform-title">AI is only as reliable as the layer controlling it.</h2></div>
+          <p>Axiom gives teams a deterministic path from the state of a codebase to the execution of an AI agent.</p>
+        </div>
+        <div class="pipeline reveal" aria-label="Axiom three-stage pipeline">
+          <article class="stage-card">
+            <div class="stage-num">01</div>
+            <h3>Ground <span>/ Axiom Ground</span></h3>
+            <p>Capture the technical reality of a repository before an agent touches it.</p>
+            <ul><li>Content-addressed snapshots</li><li>Drift audits and agent memory</li><li>Secret-redacted code index</li></ul>
+          </article>
+          <article class="stage-card">
+            <div class="stage-num">02</div>
+            <h3>Compile <span>/ Axiom Compile</span></h3>
+            <p>Resolve ambiguity and emit a scoped, context-compressed task contract.</p>
+            <ul><li>Intent extraction and risk gates</li><li>High-leverage questions only</li><li>Canonical task packets</li></ul>
+          </article>
+          <article class="stage-card">
+            <div class="stage-num">03</div>
+            <h3>Govern <span>/ Axiom Govern</span></h3>
+            <p>Make every model call observable, policy-aware, and accountable.</p>
+            <ul><li>Auth, budgets, and model routing</li><li>Injection and PII guardian</li><li>Immutable hash-chained audit</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">02 / The projects</p><h2 id="projects-title">Three products. One operational truth.</h2></div>
+          <p>Use each surface independently, or connect the full stack through versioned contracts.</p>
+        </div>
+        <div class="products">
+          <article class="product-card reveal">
+            <div class="product-top"><span class="product-index">AX / 01</span><span class="status">production-ready</span></div>
+            <h3>Ground<small>ContextLock</small></h3>
+            <p>The reproducible context layer for AI-assisted software projects. Snapshot, cache, audit, and export the truth your agents need.</p>
+            <div class="product-tags"><span class="tag">CLI</span><span class="tag">snapshots</span><span class="tag">drift</span><span class="tag">memory</span></div>
+            <a class="product-link" href="#proof">Inspect the flow <span>→</span></a>
+          </article>
+          <article class="product-card featured reveal">
+            <div class="product-top"><span class="product-index">AX / 02</span><span class="status" style="color:var(--accent-2);border-color:rgba(139,92,246,.4)">core engine</span></div>
+            <h3>Compile<small>Axiom Compile</small></h3>
+            <p>The ruthless intent compiler between human language and the coding harness. Infer what can be inferred. Ask only what matters.</p>
+            <div class="product-tags"><span class="tag">Tauri</span><span class="tag">task packets</span><span class="tag">risk gates</span><span class="tag">Zod</span></div>
+            <a class="product-link" href="#contact">Request a demo <span>→</span></a>
+          </article>
+          <article class="product-card reveal">
+            <div class="product-top"><span class="product-index">AX / 03</span><span class="status">production-ready</span></div>
+            <h3>Govern<small>Helm control plane</small></h3>
+            <p>The enterprise gateway for AI traffic. Secure, budget, route, optimize, and audit every request before it reaches a provider.</p>
+            <div class="product-tags"><span class="tag">Go</span><span class="tag">proxy</span><span class="tag">policies</span><span class="tag">Prometheus</span></div>
+            <a class="product-link" href="#contact">Talk to the team <span>→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="proof" aria-labelledby="proof-title">
+      <div class="container proof-grid">
+        <div class="proof-copy reveal">
+          <p class="eyebrow">03 / The handoff</p>
+          <h2 id="proof-title">A clean contract at every boundary.</h2>
+          <p>ContextLock exports curated GroundContext. Axiom Compile turns it into a signed task packet. Helm validates, audits, and strips the envelope before forwarding upstream.</p>
+          <ul class="proof-list"><li>Deterministic inputs and reproducible outputs</li><li>Fail-closed schemas across every seam</li><li>Sanitized audit metadata, never raw prompt bodies</li></ul>
+        </div>
+        <div class="terminal reveal" aria-label="Axiom command-line example">
+          <div class="terminal-head"><span>axiom / pipeline.log</span><span class="terminal-dots"><i></i><i></i><i></i></span></div>
+          <pre><span class="prompt">$</span> <span class="cmd">ctx context export --format json</span>
+<span class="value">✓ GroundContext v1</span>  <span class="key">snapshot</span>: <span class="value">ctxsnap_7f2d…</span>
+<span class="value">✓ memory rules loaded</span>  <span class="key">drift</span>: <span class="value">2 / 10</span>
+
+<span class="prompt">$</span> <span class="cmd">axiom compile "make auth safer"</span>
+<span class="value">✓ intent resolved</span>       <span class="key">risk</span>: <span class="value">low</span>
+<span class="value">✓ task packet emitted</span>  <span class="key">contract</span>: <span class="value">axiom.taskpacket.v1</span>
+<span class="value">✓ packet hash verified</span>  <span class="key">sha256</span>: <span class="value">91b3…c48a</span>
+
+<span class="prompt">$</span> <span class="cmd">helm route --audit task.json</span>
+<span class="value">→ policy pass · budget pass · guardian pass</span></pre>
+          <div class="terminal-foot"><span>three layers / one trace</span><button class="copy-button" type="button" data-copy="ctx context export --format json">Copy command</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="numbers-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">04 / Built for control</p><h2 id="numbers-title">Less drift. More signal.</h2></div>
+          <p>Every Axiom component is designed to make AI behavior inspectable before it becomes expensive.</p>
+        </div>
+        <div class="metric-grid reveal">
+          <div class="metric"><p class="eyebrow">contract</p><div class="metric-value">v1<span>.</span></div><p class="metric-copy">Versioned integration seams</p></div>
+          <div class="metric"><p class="eyebrow">questions</p><div class="metric-value">≤3</div><p class="metric-copy">High-leverage gates per task</p></div>
+          <div class="metric"><p class="eyebrow">audit</p><div class="metric-value">SHA<span>—</span>256</div><p class="metric-copy">Tamper-evident event chain</p></div>
+          <div class="metric"><p class="eyebrow">scope</p><div class="metric-value">local<span>↗</span></div><p class="metric-copy">Grounding stays close to the repo</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing" aria-labelledby="pricing-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">05 / The plans</p><h2 id="pricing-title">A reliability layer that scales with the team.</h2></div>
+          <p>Start free with Ground. Add the controls your agents need when the cost of drift becomes visible.</p>
+        </div>
+        <div class="pricing-grid">
+          <article class="pricing-card reveal">
+            <div class="pricing-card-top"><span class="product-index">AX / 00</span><span class="status">free</span></div>
+            <h3>Ground<small>Local-first context</small></h3>
+            <div class="price">$0 <small>forever</small></div>
+            <p class="price-note">No card required · for individual developers</p>
+            <p>Build a reproducible context layer before you commit to a paid workflow.</p>
+            <ul class="pricing-features"><li>1 repository</li><li>Snapshots and drift audits</li><li>Community support</li></ul>
+            <a class="button-secondary pricing-cta" href="#platform">Start with Ground <span>→</span></a>
+          </article>
+          <article class="pricing-card featured reveal">
+            <div class="pricing-card-top"><span class="product-index">AX / 01</span><span class="status" style="color:var(--accent-2);border-color:rgba(139,92,246,.4)">conversion plan</span></div>
+            <h3>Builder<small>Context + intent</small></h3>
+            <div class="price">$19 <small>/ developer / mo</small></div>
+            <p class="price-note">$190 / developer / year · 2 months free</p>
+            <p>Turn ambiguous requests into scoped, testable task packets with less back-and-forth.</p>
+            <ul class="pricing-features"><li>Up to 5 repositories</li><li>2,000 compiled tasks / month</li><li>30-day history and risk gates</li></ul>
+            <a class="button-primary checkout-trigger pricing-cta" href="/create-checkout-session" data-checkout data-plan="builder">Choose Builder <span>→</span></a>
+          </article>
+          <article class="pricing-card team reveal">
+            <div class="pricing-card-top"><span class="product-index">AX / 02</span><span class="status" style="color:var(--cyan);border-color:rgba(34,211,238,.4)">recommended</span></div>
+            <h3>Team<small>Governed execution</small></h3>
+            <div class="price">$49 <small>/ developer / mo</small></div>
+            <p class="price-note">$490 / developer / year · 2 months free</p>
+            <p>Give every agent run a policy boundary, a shared budget, and an accountable trace.</p>
+            <ul class="pricing-features"><li>Everything in Builder</li><li>Pooled budgets and routing policies</li><li>90-day audit history and analytics</li></ul>
+            <a class="button-primary checkout-trigger pricing-cta" href="/create-checkout-session" data-checkout data-plan="team">Choose Team <span>→</span></a>
+          </article>
+          <article class="pricing-card reveal">
+            <div class="pricing-card-top"><span class="product-index">AX / 03</span><span class="status">custom</span></div>
+            <h3>Enterprise<small>Private control plane</small></h3>
+            <div class="price">Custom <small>from $18k / year</small></div>
+            <p class="price-note">Annual contract · dedicated onboarding</p>
+            <p>Operate Axiom inside your security, procurement, and compliance model.</p>
+            <ul class="pricing-features"><li>Private deployment and SSO/SCIM</li><li>Custom retention and audit export</li><li>SLA, policy packs, and support</li></ul>
+            <a class="button-secondary pricing-cta" href="mailto:founders@axiom.sh?subject=Axiom%20Enterprise">Talk to the team <span>↗</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="cta-box reveal">
+          <p class="eyebrow">06 / Establish truth</p>
+          <h2 id="contact-title">Stop prompting.<br><span class="accent">Start compiling.</span></h2>
+          <p>Bring Axiom to the next repo where reliability matters more than another clever response.</p>
+          <div class="hero-actions"><a class="button-primary checkout-trigger" href="/create-checkout-session" data-checkout>Subscribe to Axiom <span>→</span></a><a class="button-secondary" href="mailto:founders@axiom.sh?subject=Axiom%20access">Request access</a></div>
+          <div class="cta-meta" aria-live="polite">Axiom by AuditIntellect · context → intent → execution</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner"><span class="footer-brand">[ AXIOM ] · by AuditIntellect · AI development governance</span><div class="footer-links"><a href="#platform">Platform</a><a href="#projects">Projects</a><a href="mailto:founders@axiom.sh">Email</a></div><span>© 2026 Axiom by AuditIntellect</span></div>
+  </footer>
+
+  <script>
+    (function () {
+      var menu = document.querySelector('.menu-toggle');
+      var links = document.querySelector('.nav-links');
+      menu.addEventListener('click', function () {
+        var open = links.classList.toggle('open');
+        menu.setAttribute('aria-expanded', String(open));
+        menu.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+      });
+      links.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () { links.classList.remove('open'); menu.setAttribute('aria-expanded', 'false'); });
+      });
+
+      var revealItems = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+        }, { threshold: .12 });
+        revealItems.forEach(function (item) { observer.observe(item); });
+      } else { revealItems.forEach(function (item) { item.classList.add('visible'); }); }
+
+      var sections = document.querySelectorAll('main section[id]');
+      var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+      if ('IntersectionObserver' in window) {
+        var sectionObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) navLinks.forEach(function (link) { link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id); });
+          });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+        sections.forEach(function (section) { sectionObserver.observe(section); });
+      }
+
+      var checkoutState = new URLSearchParams(window.location.search).get('checkout');
+      if (checkoutState) {
+        var checkoutMeta = document.querySelector('.cta-meta');
+        if (checkoutMeta) checkoutMeta.textContent = checkoutState === 'success'
+          ? 'Checkout complete · subscription activation is syncing'
+          : 'Checkout canceled · no charge was made';
+        if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      }
+
+      document.querySelectorAll('[data-checkout]').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+          event.preventDefault();
+          var original = button.innerHTML;
+          button.setAttribute('aria-busy', 'true');
+          button.textContent = 'Opening checkout…';
+          fetch(button.getAttribute('href'), { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: button.getAttribute('data-plan') || 'team' }) })
+            .then(function (response) { return response.json().then(function (data) { return { ok: response.ok, data: data }; }); })
+            .then(function (result) {
+              if (!result.ok || !result.data.url) throw new Error(result.data.error || 'Checkout unavailable');
+              window.location.assign(result.data.url);
+            })
+            .catch(function () {
+              button.removeAttribute('aria-busy');
+              button.innerHTML = original;
+              var checkoutMeta = document.querySelector('.cta-meta');
+              if (checkoutMeta) checkoutMeta.textContent = 'Checkout unavailable · email founders@axiom.sh for access';
+            });
+        });
+      });
+
+      document.querySelectorAll('[data-copy]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var original = button.textContent;
+          var text = button.getAttribute('data-copy');
+          var done = function () { button.textContent = 'Copied'; setTimeout(function () { button.textContent = original; }, 1400); };
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done);
+          } else {
+            var input = document.createElement('textarea');
+            input.value = text; input.setAttribute('readonly', ''); input.style.position = 'fixed'; input.style.opacity = '0';
+            document.body.appendChild(input); input.select();
+            try { document.execCommand('copy'); done(); } catch (e) { button.textContent = 'Select manually'; setTimeout(function () { button.textContent = original; }, 1400); }
+            document.body.removeChild(input);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

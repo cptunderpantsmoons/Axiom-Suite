@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "artifact_type": "site",
+  "site_hash": "ctxsite_5fd0a81bef487b21",
+  "project_id": "ctxproj_peproxy",
+  "snapshot_hash": "ctxsnap_1bbea8434ec3d726",
+  "audit_id": null,
+  "generated_at": "2026-08-17T06:00:49.815Z",
+  "pages": [
+    "index.html",
+    "snapshot.html",
+    "architecture.html",
+    "prompts.html",
+    "audit.html",
+    "claims.html",
+    "progress.html"
+  ]
+}

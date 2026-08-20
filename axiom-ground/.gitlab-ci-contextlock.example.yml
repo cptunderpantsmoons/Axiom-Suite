@@ -1,0 +1,38 @@
+# Example GitLab CI configuration for ContextLock
+# Copy the relevant job into your .gitlab-ci.yml and adjust as needed.
+
+contextlock:audit:
+  image: node:20
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: 0  # Full history required for base-branch comparison
+  before_script:
+    - npm install -g contextlock
+    - ctx init --yes
+  script:
+    - ctx snapshot --ci --quiet
+    - ctx audit --pr --base "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+  artifacts:
+    when: always
+    paths:
+      - .contextlock/audits/pr-report.md
+    expire_in: 30 days
+
+# Optional: strict mode job (fails on threshold)
+contextlock:audit:strict:
+  image: node:20
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: 0
+  before_script:
+    - npm install -g contextlock
+    - ctx init --yes
+  script:
+    - ctx snapshot --ci --quiet
+    # This fails if drift exceeds configured threshold
+    - ctx audit --pr --base "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" --strict
+  allow_failure: true

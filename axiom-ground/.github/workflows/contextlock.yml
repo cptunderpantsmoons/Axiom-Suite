@@ -1,0 +1,82 @@
+name: ContextLock Audit
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  contextlock:
+    name: ContextLock Drift Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install ContextLock
+        run: |
+          # In development: link from local checkout
+          # For published: npm install -g contextlock
+          npm install -g .
+
+      - name: Initialize
+        run: ctx init --yes
+
+      - name: Snapshot (CI mode)
+        run: ctx snapshot --ci --quiet
+
+      - name: Audit (PR mode)
+        id: audit
+        run: ctx audit --pr --base "${{ github.base_ref }}"
+        continue-on-error: true
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = '.contextlock/audits/pr-report.md';
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number
+              });
+
+              // Update existing ContextLock comment or create new one
+              const existing = comments.find(c =>
+                c.user.type === 'Bot' && c.body.includes('ContextLock Audit Report')
+              );
+
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body: report
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: report
+                });
+              }
+            }
+
+      - name: Strict mode (optional)
+        if: false  # Set to true to fail on drift threshold
+        run: ctx audit --pr --base "${{ github.base_ref }}" --strict

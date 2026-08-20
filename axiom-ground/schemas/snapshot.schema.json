@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/snapshot.schema.json",
+  "title": "ContextLock Snapshot",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "project_id",
+    "snapshot_hash",
+    "hash_spec_version",
+    "created_at",
+    "git",
+    "machine_facts",
+    "project_map",
+    "debt_markers",
+    "content_fingerprints"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "artifact_type": { "type": "string", "const": "snapshot" },
+    "project_id": { "type": "string" },
+    "snapshot_hash": { "type": "string" },
+    "artifact_hash": { "type": "string" },
+    "hash_spec_version": { "type": "integer", "const": 1 },
+    "generation_mode": { "type": "string" },
+    "incremental_base_snapshot_hash": { "type": ["string", "null"] },
+    "fallback_to_full": { "type": "boolean" },
+    "created_at": { "type": "string" },
+    "git": {
+      "type": "object",
+      "required": ["branch", "commit", "dirty"],
+      "properties": {
+        "branch": { "type": ["string", "null"] },
+        "commit": { "type": ["string", "null"] },
+        "dirty": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "machine_facts": { "type": "object" },
+    "project_map": { "type": "object" },
+    "debt_markers": { "type": "array" },
+    "inferred_context": { "type": "object" },
+    "human_annotations": { "type": "object" },
+    "volatile_state": { "type": "object" },
+    "content_fingerprints": { "type": "object" },
+    "security": {
+      "type": "object",
+      "properties": {
+        "redaction_count": { "type": "integer" },
+        "sensitive_paths_skipped": { "type": "integer" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

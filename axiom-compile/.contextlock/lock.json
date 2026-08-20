@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "project_id": "ctxproj_peproxy",
+  "current_branch": "master",
+  "current_commit": "582b8f33409dfbc694fd147a32135243f1fd4e64",
+  "latest_snapshot_hash": "ctxsnap_1bbea8434ec3d726",
+  "latest_audit_id": null,
+  "latest_prompt_hashes": {},
+  "latest_site": {
+    "site_hash": "ctxsite_5fd0a81bef487b21",
+    "snapshot_hash": "ctxsnap_1bbea8434ec3d726",
+    "index_path": ".contextlock/site/index.html",
+    "generated_at": "2026-08-17T06:00:49.815Z"
+  },
+  "updated_at": "2026-08-17T06:00:49.822Z"
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/planning-progress.schema.json",
+  "title": "ContextLock Planning Progress",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "project",
+    "updated_at",
+    "status_scale",
+    "quality_gate_policy",
+    "specs",
+    "builds"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "artifact_type": { "type": "string", "const": "planning_progress" },
+    "project": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "status_scale": { "type": "array", "items": { "type": "string" } },
+    "quality_gate_policy": { "type": "object" },
+    "specs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "status", "owner"],
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "status": { "type": "string", "enum": ["not_started", "draft_complete", "in_progress", "blocked", "validated", "done"] },
+          "owner": { "type": "string" },
+          "gates": { "type": "array", "items": { "type": "string" } },
+          "implementation_readiness": { "type": "string" }
+        }
+      }
+    },
+    "builds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "status"],
+        "properties": {
+          "id": { "type": ["integer", "string"] },
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["not_started", "draft_complete", "in_progress", "blocked", "validated", "done"] },
+          "depends_on": { "type": "array" }
+        }
+      }
+    },
+    "guardrails": {
+      "type": "object",
+      "properties": {
+        "active_enforcement": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "enum": ["pass", "fail", "warn"] }
+        },
+        "planned_enforcement": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "enum": ["pass", "fail", "warn"] }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "plan_audits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["plan_id", "plan_type", "verified_at", "on_track", "verdict", "findings_total", "task_results"],
+        "properties": {
+          "plan_id": { "type": "string" },
+          "plan_type": { "type": "string" },
+          "verified_at": { "type": "string" },
+          "on_track": { "type": "boolean" },
+          "verdict": { "type": "string" },
+          "findings_total": { "type": "integer" },
+          "task_results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "gates_verified", "issue_count"],
+              "properties": {
+                "id": { "type": "string" },
+                "gates_verified": { "type": "boolean" },
+                "issue_count": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": { "type": "object" }
+  }
+}

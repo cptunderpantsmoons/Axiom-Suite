@@ -1,0 +1,39 @@
+/* Axiom — brand tokens
+   Product: a desktop "intent compiler" that turns messy requests into scoped,
+   testable task packets. Core principle: the rules of the task are absolute
+   (no context drift, no negotiation). The Axiom mark = a strict geometric "A"
+   on a truth line: an axiom is a self-evident truth that admits no argument. */
+
+:root {
+  /* Surfaces */
+  --axiom-ink:      #0F172A;   /* slate-900 — text, dark chrome      */
+  --axiom-bg:       #F8FAFC;   /* app canvas                         */
+  --axiom-panel:    #FFFFFF;   /* cards / sidebar                    */
+  --axiom-panel-2:  #F1F5F9;   /* sunken wells                      */
+  --axiom-line:     #E2E8F0;   /* hairlines                         */
+
+  /* Brand */
+  --axiom-primary:  #4F46E5;   /* indigo-600 — primary action       */
+  --axiom-primary-2:#7C3AED;   /* violet — gradient partner         */
+  --axiom-accent:   #06B6D4;   /* cyan — links, focus               */
+
+  /* Signal */
+  --axiom-warn:     #F59E0B;   /* amber — the human "question gate" */
+  --axiom-ok:       #10B981;   /* green — valid packet              */
+  --axiom-danger:   #EF4444;   /* red — fail-closed / error         */
+
+  /* Text */
+  --axiom-text:     #0F172A;
+  --axiom-text-2:   #475569;   /* secondary                         */
+  --axiom-text-3:   #94A3B8;   /* muted                             */
+
+  /* Type */
+  --axiom-sans: "Inter", "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --axiom-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* Shape */
+  --axiom-r-sm: 8px;
+  --axiom-r:    12px;
+  --axiom-r-lg: 18px;
+  --axiom-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}

@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Pre-release checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run performance benchmarks
+        run: node --test tests/perf.test.js
+
+  release:
+    name: Create release
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify package.json version matches tag
+        run: |
+          PKG_VERSION=$(node -e "console.log(require('./package.json').version)")
+          TAG_VERSION="${{ steps.version.outputs.VERSION }}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "Package version ($PKG_VERSION) doesn't match tag version ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Collect commits since last tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREVIOUS_TAG" ]; then
+            COMMITS=$(git log "${PREVIOUS_TAG}..HEAD" --pretty=format:"- %s (%h)")
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)")
+          fi
+
+          # Build changelog body
+          {
+            echo "## What's Changed"
+            echo ""
+            echo "$COMMITS"
+            echo ""
+            echo "## Full Diff"
+            echo ""
+            echo "https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${GITHUB_REF_NAME}"
+          } > /tmp/changelog.md
+
+          echo "path=/tmp/changelog.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const changelog = fs.readFileSync('/tmp/changelog.md', 'utf8');
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: process.env.GITHUB_REF_NAME,
+              name: `Release ${process.env.GITHUB_REF_NAME}`,
+              body: changelog,
+              draft: false,
+              prerelease: process.env.GITHUB_REF_NAME.includes('-')
+            });

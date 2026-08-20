@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "artifact_type": "planning_progress",
+  "project": "ContextLock",
+  "updated_at": "2026-08-15T03:05:00Z",
+  "status_scale": [
+    "not_started",
+    "draft_complete",
+    "in_progress",
+    "blocked",
+    "validated",
+    "done"
+  ],
+  "quality_gate_policy": {
+    "mode": "strict",
+    "drift_policy": "no_silent_drift",
+    "intentional_change_requires": [
+      "spec_update",
+      "version_bump_if_applicable",
+      "fixture_evidence",
+      "decision_record"
+    ]
+  },
+  "specs": [
+    {
+      "id": "spec-11",
+      "path": "docs/specs/11-snapshot-canonicalization-and-hash.md",
+      "status": "validated",
+      "owner": "core",
+      "gates": [
+        "hash_determinism",
+        "lf_crlf_equivalence"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-12",
+      "path": "docs/specs/12-file-classification-and-exclusion.md",
+      "status": "validated",
+      "owner": "core",
+      "gates": [
+        "exclude_fixture",
+        "classification_fixture"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-13",
+      "path": "docs/specs/13-secret-scanning-policy.md",
+      "status": "validated",
+      "owner": "security",
+      "gates": [
+        "redaction_check",
+        "pre_sync_block_check"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-14",
+      "path": "docs/specs/14-audit-scoring-versioning.md",
+      "status": "validated",
+      "owner": "audit",
+      "gates": [
+        "score_reproducibility",
+        "score_breakdown_integrity"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-15",
+      "path": "docs/specs/15-incremental-snapshot-invalidation.md",
+      "status": "validated",
+      "owner": "snapshot",
+      "gates": [
+        "incremental_full_equivalence",
+        "fallback_recovery"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-16",
+      "path": "docs/specs/16-alpha-ecosystem-support-boundary.md",
+      "status": "validated",
+      "owner": "scanner",
+      "gates": [
+        "node_fixture",
+        "python_fixture",
+        "partial_support_notice"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-17",
+      "path": "docs/specs/17-ai-change-guardrails.md",
+      "status": "validated",
+      "owner": "governance",
+      "gates": [
+        "pr_metadata_required",
+        "guardrails_core_enforced"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-18",
+      "path": "docs/specs/18-guardrail-ci-checklist.md",
+      "status": "validated",
+      "owner": "ci",
+      "gates": [
+        "core_checks_enabled"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-19",
+      "path": "docs/specs/19-rag-ingestion-bundle.md",
+      "status": "validated",
+      "owner": "storage",
+      "gates": [
+        "bundle_determinism",
+        "secret_redaction_in_bundle",
+        "exclusion_respected"
+      ],
+      "implementation_readiness": "fixtures_and_schema_validated"
+    },
+    {
+      "id": "spec-20",
+      "path": "docs/specs/20-agent-memory-model.md",
+      "status": "validated",
+      "owner": "memory",
+      "gates": [
+        "anchor_hash_determinism",
+        "stale_flag_via_drift",
+        "memory_secret_redaction",
+        "append_only_supersede"
+      ],
+      "implementation_readiness": "implemented_with_fixtures"
+    },
+    {
+      "id": "spec-21",
+      "path": "docs/specs/21-code-index-artifact.md",
+      "status": "validated",
+      "owner": "codeindex",
+      "gates": [
+        "doc_id_determinism",
+        "index_determinism_hash",
+        "symbol_extraction",
+        "code_doc_provenance",
+        "code_secret_redaction"
+      ],
+      "implementation_readiness": "implemented_with_fixtures"
+    }
+  ],
+  "builds": [
+    {
+      "id": 1,
+      "name": "ctx init",
+      "status": "done",
+      "depends_on": [
+        "spec-11",
+        "spec-12",
+        "spec-13",
+        "spec-16"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ctx snapshot",
+      "status": "validated",
+      "depends_on": [
+        "spec-11",
+        "spec-12",
+        "spec-13",
+        "spec-15",
+        "spec-16"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "snapshot.md quality",
+      "status": "done",
+      "depends_on": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "name": "ctx prompt onboarding",
+      "status": "done",
+      "depends_on": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ctx audit --since-last",
+      "status": "done",
+      "depends_on": [
+        2,
+        4,
+        "spec-14"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "ctx site build",
+      "status": "done",
+      "depends_on": [
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "id": 7,
+      "name": "post-commit automation",
+      "status": "done",
+      "depends_on": [
+        2,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "id": 8,
+      "name": "hugging face sync",
+      "status": "validated",
+      "depends_on": [
+        2,
+        4,
+        5,
+        "spec-13"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "ci audit",
+      "status": "done",
+      "depends_on": [
+        5,
+        "spec-18"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "rules/contracts",
+      "status": "done",
+      "depends_on": [
+        5
+      ]
+    },
+    {
+      "id": 11,
+      "name": "planning engine",
+      "status": "done",
+      "depends_on": [
+        2,
+        5,
+        10
+      ]
+    },
+    {
+      "id": 12,
+      "name": "rag ingestion bundle + agent memory",
+      "status": "validated",
+      "depends_on": [
+        2,
+        "spec-19",
+        "spec-20"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "code index artifact",
+      "status": "validated",
+      "depends_on": [
+        2,
+        "spec-21"
+      ]
+    }
+  ],
+  "guardrails": {
+    "active_enforcement": {
+      "spec_link_check": "pass",
+      "secret_scan_check": "pass",
+      "source_test_coupling_check": "pass",
+      "scope_boundary_check": "pass",
+      "determinism_replay_check": "pass"
+    },
+    "planned_enforcement": {
+      "spec_link_check": "pass",
+      "spec_update_version_bump_check": "pass",
+      "fixture_coupling_check": "pass",
+      "determinism_replay_check": "pass",
+      "secret_scan_check": "pass",
+      "dependency_rationale_check": "pass",
+      "source_test_coupling_check": "pass",
+      "audit_delta_high_severity_check": "pass",
+      "scope_boundary_check": "pass"
+    },
+    "notes": "Build 7 and 11 complete. Core guardrails are scaffolded. Snapshot determinism, embedded secret redaction, artifact schema validation, incremental fingerprint reuse/fallback fixtures, plan schema validation, dependency-rationale CI, audit high-severity acknowledgement, spec/version-bump CI, and HF mock/dry-run coverage are now covered. Planning engine upgraded to plan schema_version 2 with whole-plan and per-task quality gates plus granular task steps; ctx audit --against-plan enforces gated, detailed tasks. Remaining hardening: more granular incremental aggregate recomputation and broader real-provider HF validation."
+  },
+  "ui": {
+    "planned_page": ".contextlock/site/progress.html",
+    "data_source": "docs/planning/contextlock-progress.json",
+    "widgets": [
+      "overall_status",
+      "build_phase_timeline",
+      "spec_compliance_board",
+      "quality_gate_status",
+      "drift_incidents"
+    ]
+  }
+}

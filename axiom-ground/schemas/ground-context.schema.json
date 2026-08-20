@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/ground-context.schema.json",
+  "title": "Axiom Ground Context Export",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "snapshot",
+    "prompt_pack",
+    "drift",
+    "repo_context",
+    "memory",
+    "code_index",
+    "security"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "ground.context.v1" },
+    "project": {
+      "type": "object",
+      "required": ["project_id", "project_name"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "project_name": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["snapshot_hash", "snapshot_schema_version", "hash_spec_version", "created_at", "git"],
+      "properties": {
+        "snapshot_hash": { "type": "string" },
+        "snapshot_schema_version": { "type": "integer" },
+        "hash_spec_version": { "type": "integer" },
+        "created_at": { "type": "string" },
+        "git": {
+          "type": "object",
+          "required": ["branch", "commit", "dirty"],
+          "properties": {
+            "branch": { "type": ["string", "null"] },
+            "commit": { "type": ["string", "null"] },
+            "dirty": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "prompt_pack": {
+      "type": "object",
+      "required": ["prompt_type", "snapshot_hash", "available"],
+      "properties": {
+        "prompt_id": { "type": ["string", "null"] },
+        "prompt_type": { "type": "string", "const": "onboarding" },
+        "snapshot_hash": { "type": "string" },
+        "available": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "drift": {
+      "type": "object",
+      "required": ["audit_id", "score", "status", "snapshot_hash"],
+      "properties": {
+        "audit_id": { "type": ["string", "null"] },
+        "score": { "type": ["number", "null"] },
+        "status": { "type": "string", "enum": ["unknown", "pass", "warn", "fail"] },
+        "snapshot_hash": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "repo_context": {
+      "type": "object",
+      "required": ["languages", "frameworks", "test_commands", "build_commands", "run_commands", "entrypoints", "important_files"],
+      "properties": {
+        "languages": { "type": "array", "items": { "type": "string" } },
+        "frameworks": { "type": "array", "items": { "type": "string" } },
+        "test_commands": { "type": "array", "items": { "type": "string" } },
+        "build_commands": { "type": "array", "items": { "type": "string" } },
+        "run_commands": { "type": "array", "items": { "type": "string" } },
+        "entrypoints": { "type": "array", "items": { "type": "string" } },
+        "important_files": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "memory": {
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "code_index": {
+      "type": "object",
+      "required": ["available", "snapshot_hash", "index_determinism_hash"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "snapshot_hash": { "type": ["string", "null"] },
+        "index_determinism_hash": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "required": ["secret_scan_passed", "redaction_count", "sensitive_paths_skipped"],
+      "properties": {
+        "secret_scan_passed": { "type": "boolean" },
+        "redaction_count": { "type": "integer", "minimum": 0 },
+        "sensitive_paths_skipped": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

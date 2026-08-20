@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "project_id": "ctxproj_management-harness",
+  "current_branch": "main",
+  "current_commit": null,
+  "latest_snapshot_hash": "ctxsnap_894302740e32b956",
+  "latest_audit_id": null,
+  "latest_prompt_hashes": {
+    "onboarding": "ctxprompt_02740e32b956"
+  },
+  "latest_site": null,
+  "updated_at": "2026-08-15T07:17:00.782Z"
+}

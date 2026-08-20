@@ -1,0 +1,35 @@
+{
+  "agent_id": "agency-agents-orchestrator-1d8827",
+  "generated": "2026-08-16T16:06:06.302548+00:00",
+  "status": "FIX CONFIRMED BY LIVE SERVICE (2026-08-17T02:05:24Z)",
+  "quality_gate": {
+    "go_build": "PASS",
+    "go_vet": "PASS",
+    "go_test_race_pkgs": 20,
+    "smoke_passing": 5,
+    "smoke_total": 5,
+    "gpu_hour_cost": 2.5,
+    "gpu_count": 1,
+    "tps": 90.0,
+    "safety": 1.25,
+    "min_sec": 3.0,
+    "live_api_response": "gpu_hour_cost=2.5 PASS"
+  },
+  "fixes_applied": [
+    "parseLocalBlocks: yaml.v3 fallback (findMapChild + walkYAMLFields + parseYAMLFloat + recover)",
+    "MergeProviders: starts from static; LocalConfigIsEmpty guard prevents clobber",
+    "applyProviderEnvOverrides: confirmed does not touch Local.* fields",
+    "runtime.json: cleaned to empty local override; static-first contract",
+    "go build -o ./bin/management-harness-manager: fresh binary deployed"
+  ],
+  "tests_passing": [
+    "TestYAMLNodeRevealsLocalBlock",
+    "TestMergeProvidersLocalEmptyOverrideIsSafe",
+    "TestMergeProvidersNonZeroOverrideWins",
+    "TestConfigLoadPopulatesGpuBlock",
+    "TestLocalConfigIsEmptyExported"
+  ],
+  "live_service_verified": true,
+  "api_port": 8090,
+  "all_components_confirmed": true
+}

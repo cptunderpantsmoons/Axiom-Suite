@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/lock.schema.json",
+  "title": "ContextLock Lockfile",
+  "type": "object",
+  "required": [
+    "version",
+    "project_id"
+  ],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "project_id": { "type": "string" },
+    "current_branch": { "type": ["string", "null"] },
+    "current_commit": { "type": ["string", "null"] },
+    "latest_snapshot_hash": { "type": ["string", "null"] },
+    "latest_audit_id": { "type": ["string", "null"] },
+    "latest_drift_score": { "type": ["number", "null"] },
+    "latest_prompt_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "latest_site": { "type": ["object", "null"] },
+    "updated_at": { "type": "string" }
+  },
+  "additionalProperties": true
+}

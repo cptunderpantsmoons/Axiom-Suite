@@ -1,0 +1,24 @@
+{
+  "name": "contextlock",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reproducible context layer for AI-assisted software projects.",
+  "type": "module",
+  "bin": {
+    "ctx": "src/cli/main.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "ctx": "node src/cli/main.js",
+    "lint": "node scripts/lint.js",
+    "lint:fix": "node scripts/lint.js --fix",
+    "doctor": "node src/cli/main.js doctor",
+    "check": "npm run lint && npm test",
+    "prepack": "npm run check",
+    "setup": "node scripts/setup.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

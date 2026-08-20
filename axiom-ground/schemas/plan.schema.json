@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/plan.schema.json",
+  "title": "ContextLock Plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "plan_id",
+    "plan_type",
+    "project_id",
+    "snapshot_hash",
+    "created_at",
+    "summary",
+    "context",
+    "quality_gates",
+    "tasks",
+    "audit_checkpoints",
+    "rollback_plan",
+    "validation_summary"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 2 },
+    "artifact_type": { "type": "string", "const": "plan" },
+    "plan_id": { "type": "string" },
+    "plan_type": { "type": "string" },
+    "project_id": { "type": "string" },
+    "snapshot_hash": { "type": ["string", "null"] },
+    "source_commit": { "type": ["string", "null"] },
+    "created_at": { "type": "string" },
+    "summary": { "type": "string" },
+    "context": { "type": "object" },
+    "quality_gates": {
+      "type": "array",
+      "description": "Global gates every task in the plan must satisfy before the plan is considered complete.",
+      "items": {
+        "type": "object",
+        "required": ["name", "command", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "command": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "affected_modules",
+          "expected_touched_files",
+          "steps",
+          "acceptance_criteria",
+          "quality_gates",
+          "validation_commands",
+          "rollback_criteria",
+          "depends_on",
+          "references_prompts"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "affected_modules": { "type": "array", "items": { "type": "string" } },
+          "expected_touched_files": { "type": "array", "items": { "type": "string" } },
+          "steps": {
+            "type": "array",
+            "description": "Granular, ordered sub-steps for executing this task.",
+            "items": { "type": "string" }
+          },
+          "acceptance_criteria": { "type": "array", "items": { "type": "string" } },
+          "quality_gates": {
+            "type": "array",
+            "description": "Verifiable checkpoints that must pass before this task is done.",
+            "items": {
+              "type": "object",
+              "required": ["name", "command", "description"],
+              "properties": {
+                "name": { "type": "string" },
+                "command": { "type": "string" },
+                "description": { "type": "string" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "validation_commands": { "type": "array", "items": { "type": "string" } },
+          "rollback_criteria": { "type": "string" },
+          "depends_on": { "type": "array", "items": { "type": "string" } },
+          "references_prompts": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "audit_checkpoints": { "type": "array", "items": { "type": "string" } },
+    "rollback_plan": { "type": "string" },
+    "validation_summary": { "type": "string" }
+  },
+  "additionalProperties": true
+}

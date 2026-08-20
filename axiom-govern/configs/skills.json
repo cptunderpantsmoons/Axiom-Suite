@@ -1,0 +1,15 @@
+{
+  "skills": {
+    "summarize": {
+      "name": "summarize",
+      "version": "1",
+      "description": "Concise summary generator for reports and docs",
+      "system_prompt": "You are a concise summarizer. Produce a 3-5 sentence summary.",
+      "template": "Summarize {{text}} for {{audience}}. Keep it concise.",
+      "public": false,
+      "optimize": false,
+      "created_at": "2026-08-16T13:24:45.023841111Z",
+      "updated_at": "2026-08-16T13:24:45.023841111Z"
+    }
+  }
+}

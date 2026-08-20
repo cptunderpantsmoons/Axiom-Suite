@@ -1,0 +1,22 @@
+{
+  "name": "@axiom/core",
+  "version": "0.1.0",
+  "description": "Axiom — headless intent compiler core (UI-agnostic, M1 skeleton)",
+  "type": "module",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "npm run build && node --test dist/test/core.test.js",
+    "cli": "node dist/src/cli.js",
+    "test:golden": "npm run build && node dist/src/cli.js --test"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

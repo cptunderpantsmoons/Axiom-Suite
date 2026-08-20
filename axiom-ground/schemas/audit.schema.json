@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextlock.local/schemas/audit.schema.json",
+  "title": "ContextLock Audit",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "audit_id",
+    "project_id",
+    "from_snapshot",
+    "to_snapshot",
+    "created_at",
+    "scoring_version",
+    "final_drift_score",
+    "score_breakdown",
+    "findings",
+    "stale_prompts"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "artifact_type": { "type": "string", "const": "audit" },
+    "audit_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "from_snapshot": { "type": "string" },
+    "to_snapshot": { "type": "string" },
+    "from_commit": { "type": ["string", "null"] },
+    "to_commit": { "type": ["string", "null"] },
+    "created_at": { "type": "string" },
+    "scoring_version": { "type": "integer", "const": 1 },
+    "scoring_model": { "type": "string" },
+    "final_drift_score": { "type": "integer" },
+    "score_breakdown": { "type": "array" },
+    "findings": { "type": "array" },
+    "stale_prompts": { "type": "array" }
+  },
+  "additionalProperties": true
+}

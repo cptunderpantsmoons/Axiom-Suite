@@ -1,0 +1,17 @@
+{
+  "id": "mem_f0aa3b0fce51d021",
+  "type": "decision",
+  "content": "probe ctxsnap_894302740e32b956",
+  "anchor_hash": "ctxsnap_894302740e32b956",
+  "related_files": [
+    "implementation_plan.md"
+  ],
+  "created_at": "2026-08-15T09:12:07.302Z",
+  "superseded_by": "mem_fc9fb542c5f401f0",
+  "redacted": false,
+  "schema_version": 1,
+  "updated_at": "2026-08-15T09:13:34.106Z",
+  "stale": false,
+  "stale_reason": "no_drift",
+  "verified_at": "2026-08-15T09:13:38.619Z"
+}

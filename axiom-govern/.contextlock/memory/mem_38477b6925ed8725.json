@@ -1,0 +1,17 @@
+{
+  "id": "mem_38477b6925ed8725",
+  "type": "decision",
+  "content": "Management Harness architecture (from implementation_plan.md): a Go-based proxy gateway sitting between AI dev tools (Claude Desktop/Code, Cursor, Cline, custom agents) and upstream LLM providers (OpenAI, Anthropic, Gemini). Provides unified API-key auth, per-user/team/org budget enforcement, prompt-injection and PII protection via a security guardian, policy-driven model routing, immutable audit logging, and an admin dashboard. Built from modular LEGO-style components (auth, budget, guardian, policy, router, cache, optimizer) each independently developed, tested, and deployed. Runs as a standalone Docker Compose stack (PostgreSQL, Redis, Prometheus, Grafana), deployable alone or alongside the Laiw Legal OS platform. Strategy is MVP-first: an 8-week MVP delivering proxy plus auth, budget, guardian, and audit logging, then layering policy engine, model router, prompt optimizer, and full dashboard. [Re-anchored to current project snapshot ctxsnap_894302740e32b956 on 2026-08-15.] ctxsnap_894302740e32b956",
+  "anchor_hash": "ctxsnap_894302740e32b956",
+  "related_files": [
+    "implementation_plan.md"
+  ],
+  "created_at": "2026-08-15T09:12:44.962Z",
+  "superseded_by": "mem_fc9fb542c5f401f0",
+  "redacted": false,
+  "schema_version": 1,
+  "stale": false,
+  "stale_reason": "no_drift",
+  "verified_at": "2026-08-15T09:13:38.608Z",
+  "updated_at": "2026-08-15T09:13:33.883Z"
+}

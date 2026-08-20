@@ -1,0 +1,140 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 30s
+  write_timeout: 30s
+  # CIDRs of reverse proxies whose X-Forwarded-For entries are trusted when
+  # deriving the client IP for rate limiting and audit logs. Leave empty to
+  # ignore forwarded headers entirely and use the TCP peer address (spoof-proof).
+  # Example when fronted by nginx on localhost:
+  #   trusted_proxies:
+  #     - "127.0.0.1/32"
+  #     - "::1/128"
+  trusted_proxies: []
+
+proxy:
+  enabled: true
+  default_provider: kilo
+  upstream_timeout: 60s
+  require_auth: true
+  max_request_bytes: 4194304
+
+manager:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8090
+  # Secrets MUST be supplied via environment (MH_MANAGER_ADMIN_TOKEN / MH_MANAGER_JWT_SECRET).
+  # They are intentionally absent here so the process fails fast if not provided.
+  allowed_origins:
+    - "http://localhost:8090"
+  web_enabled: true
+  web_dist_dir: "internal/web/dist"
+
+redis:
+  enabled: false
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
+providers:
+  openai:
+    type: openai
+    api_key: "sk-your-key"
+    base_url: "https://api.openai.com/v1"
+    enabled: false
+    # Per-provider circuit-breaker override. Omit to use the global defaults
+    # under the `breaker` block below.
+    breaker:
+      max_failures: 5
+      cooldown: 10s
+  anthropic:
+    type: anthropic
+    api_key: "sk-ant-your-key"
+    base_url: "https://api.anthropic.com/v1"
+    enabled: false
+  # NVIDIA NIM (OpenAI-compatible) — default optimizer + direct provider.
+  # Supply MH_PROVIDERS_NVIDIA_API_KEY before using direct NVIDIA requests.
+  nvidia:
+    type: openai
+    api_key: ""
+    base_url: "https://integrate.api.nvidia.com/v1"
+    enabled: true
+  # Self-hosted inference (vLLM / llama.cpp / custom) — costed by GPU-hour, not tokens.
+  local:
+    type: local
+    base_url: "http://127.0.0.1:8000/v1"
+    enabled: false
+    local:
+      gpu_hour_cost: 2.5          # all-in $/GPU-hour
+      gpu_count: 1
+      declared_throughput_tps: 90 # conservative shared operating point
+      safety_factor: 1.25
+      min_gpu_seconds_per_request: 3
+  # Kilo AI Gateway — default OpenAI-compatible route for normal requests.
+  # Current Kilo docs use this base URL and require a Kilo API key/credits.
+  kilo:
+    type: openai
+    api_key: ""
+    base_url: "https://api.kilo.ai/api/gateway"
+    enabled: true
+  # OpenCode Zen — always-free models over /chat/completions, KEYLESS, e.g.
+  # opencode/hy3-free, opencode/deepseek-v4-flash-free, opencode/mimo-v2.5-free.
+  # (The /v1 is required by Zen. Gotcha: GPT/Grok are only on /responses, Claude/Qwen
+  # on /messages — stick to the *-free + openai-compatible family on chat/completions.)
+  opencode:
+    type: openai
+    api_key: ""
+    base_url: "https://opencode.ai/zen/v1"
+    enabled: false
+  # Nous Research — API is NOT free: requires a portal API key (or on-chain Solana USDC
+  # x402 per request). Keyless calls get a 401 or a payments demand. Free tier exists only
+  # for the 'Nous Chat' web app, not the inference API. Keep for users with a paid key.
+  nous:
+    type: openai
+    api_key: ""
+    base_url: "https://inference-api.nousresearch.com/v1"
+    enabled: false
+  # OpenCode Go — a PAID subscription tier ($10/mo after $5 first month) on Zen's
+  # infrastructure. Separate sub-path endpoint + own Go subscription key. Models prefixed
+  # 'opencode-go/' (e.g. opencode-go/deepseek-v4-flash). NOT free; dollar-based usage limits.
+  opencode-go:
+    type: openai
+    api_key: ""
+    base_url: "https://opencode.ai/zen/go/v1"
+    enabled: false
+
+# Circuit breaker: trips open after `max_failures` consecutive provider errors
+# and stays open for `cooldown` before probing with a single request. Per-provider
+# overrides are honored via providers.<name>.breaker.
+breaker:
+  max_failures: 5
+  cooldown: 10s
+
+# Token-cost pricing (USD per 1K tokens) for the per-identity cost metric and
+# budget-estimate reconciliation. Known models use the built-in price table;
+# unknown models fall back to `default_rate`.
+pricing:
+  default_rate: 3.0
+
+# LLM used for prompt optimisation and the skill-creation wizard.
+# NVIDIA is the default optimizer/provider when its API key is configured.
+optimizer:
+  enabled: true
+  provider: "nvidia"
+  model: "nvidia/nemotron-3.5-lightning-30b-a3b"
+  shadow_mode: false
+
+guardian:
+  enabled: true
+  block_injection: true
+  block_jailbreak: true
+  redact_pii: true
+
+metrics:
+  enabled: true
+  port: 9091
+  path: /metrics
+
+logging:
+  level: info
+  format: json
